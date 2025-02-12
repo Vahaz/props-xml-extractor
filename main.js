@@ -14,18 +14,22 @@ fs.readFile('data.xml', "utf-8", function(err, data) {
         var index = 0;
         Items.forEach((Item) => {
             // ITEMS
-            storage.set((index += 1), Item.name[0]);
+            if(Item.name[0] != undefined) storage.set((index += 1), Item.name[0]);
 
             // ITEMS → EXTENSIONS → ITEMS
             const Props = Item.extensions[0].Item;
             if (Props != undefined) {
-                Props.forEach((prop) => { storage.set((index += 1), prop.spawnType[0]) });
+                Props.forEach((prop) => { 
+                    if(prop.spawnType != undefined) storage.set((index += 1), prop.spawnType[0]);
+                });
             };
 
             // ITEMS → ENTITIES → ITEMS
             if (Item.entities != undefined) {
                 const Entities = Item.entities[0].Item;
-                Entities.forEach((entity) => { storage.set((index += 1), entity.archetypeName[0]) })
+                Entities.forEach((entity) => { 
+                    if(entity.archetypeName != undefined) storage.set((index += 1), entity.archetypeName[0]);
+                })
             };
         });
 

@@ -5,7 +5,7 @@ The project will be ARCHIVED on release.
 
 ## USAGE
 
-1. Get a '[name].ytyp.xml' file from CodeWalker, rename it 'data.xml'.
+1. Get a '[name].ytyp.xml' file from CodeWalker, rename it 'data.xml' and add it to the folder.
 2. Run the main.js file. (node .)
 3. Read the created 'result.txt' file containing all not-duplicated props / entities used in the original ytyp file.
 

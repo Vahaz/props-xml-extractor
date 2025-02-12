@@ -1,6 +1,5 @@
 var fs = require('fs'),
     xml2js = require('xml2js');
-    util = require('util');
 
 var parser = new xml2js.Parser();
 

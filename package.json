@@ -1,7 +1,7 @@
 {
   "name": "prop-xml-extractor",
-  "version": "1.0.0",
-  "description": "Extract entities and props from .ytyp.xml files.",
+  "version": "1.2.0",
+  "description": "Extract props from .ytyp files converted in .xml.",
   "main": "main.js",
   "scripts": {
     "test": "node ."

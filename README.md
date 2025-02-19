@@ -38,6 +38,8 @@ Use in a console (credits: [Single executable applications](https://nodejs.org/a
 2. ```node -e "require('fs').copyFileSync(process.execPath, 'props-xml-extractor.exe')"``` to generate the .exe file named `props-xml-extractor.exe` to generate the `props-xml-extractor.exe`
 3. ```npx postject props-xml-extractor.exe NODE_SEA_BLOB sea.blob ` --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2``` to inject the .blob into the .exe
 
+You will notice that to work, the executable need the "node_modules" folder from the source code. Because "SEA" can not add external modules to the executable.
+
 ## UPDATES
 
 - **1.3.0**

@@ -1,17 +1,21 @@
-var fs = require('fs'),
-    xml2js = require('xml2js');
+var sea = require("node:sea");
+
+if (sea.isSea()) {
+    const { createRequire } = require("node:module");
+    require = createRequire(__filename);
+}
+
+const fs = require("fs")
+const xml2js = require("xml2js");
 
 var parser = new xml2js.Parser();
 var storage = new Map(); 
 var output = new Map();
 
-fs.readFile('data.xml', "utf-8", function(err, data) {
+fs.readFile(__dirname + 'data.xml', "utf-8", function(err, data) {
+    if (err) { console.warn("[prop-xml-extractor] Error: data.xml do not exist."); return }
     parser.parseString(data, function (err, result) {
-        if(result == undefined) {
-            console.warn("[prop-xml-extractor] data.xml is empty / do not exist.")
-            return;
-        }
-
+        if (result == undefined) { console.warn("[prop-xml-extractor] Error: data.xml might be empty."); return }
         const Items = result.CMapTypes.archetypes[0].Item;
         var index = 0;
         Items.forEach((Item) => {
@@ -54,6 +58,6 @@ fs.readFile('data.xml', "utf-8", function(err, data) {
 
         var json = JSON.stringify([...output.keys()], null, 1).replaceAll('[', '').replaceAll('"', '').replaceAll(',', '').replaceAll(']', '').replaceAll(' ', ''); // How regex works???
         fs.writeFile('result.txt', json, err => {});
-        console.log(`[prop-xml-extractor] Done, got ${output.size} props !`);
+        console.log(`[prop-xml-extractor] Result: Done, got ${output.size} props !`);
     });
 });

@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> A much better version of this exist. Available on [ook_3D](https://www.youtube.com/@ook_3D) youtube, and it is available on [this video](https://youtu.be/iYEhrOtWorA?si=Qj1TvBvABC6Q_WNA) [(download)](https://drive.google.com/file/d/1AXGpq3E2QVC-aVw6YU2AV2kUA_CfEKGA/view).
+
 # `Props-XML-Extractor`
 
 > [!IMPORTANT]

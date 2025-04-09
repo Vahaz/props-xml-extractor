@@ -10,13 +10,13 @@ const fs = require("fs"),
     resultDirectory = __dirname + "/result",
     inputDirectory = __dirname + "/input";
 
-if(!fs.existsSync(inputDirectory)) { 
-    fs.mkdirSync(inputDirectory, {recursive: false});
+if(!fs.existsSync(resultDirectory)) { 
+    fs.mkdirSync(resultDirectory, {recursive: false});
     console.warn("[prop-xml-extractor] Warn: No result folder found. Creating it...");
 };
 
-if(!fs.existsSync(resultDirectory)) { 
-    fs.mkdirSync(resultDirectory, {recursive: false});
+if(!fs.existsSync(inputDirectory)) { 
+    fs.mkdirSync(inputDirectory, {recursive: false});
     console.warn("[prop-xml-extractor] Warn: No input folder found. Creating it...");
     console.warn("[prop-xml-extractor] Warn: Place .xml files in input folder and retry !");
     return;

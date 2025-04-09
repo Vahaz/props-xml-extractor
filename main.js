@@ -23,10 +23,10 @@ if(!fs.existsSync(inputDirectory)) {
 };
 
 try { var inputFiles = fs.readdirSync(inputDirectory, "utf-8"); } 
-catch(err) { console.error("[prop-xml-extractor]", err); return; }
+catch(err) { return console.error("[prop-xml-extractor]", err); }
 
 const xmlFiles = inputFiles.filter((file) => path.extname(file) === ".xml");
-if(xmlFiles.length === 0) { console.warn("[prop-xml-extractor] Warn: No .xml files found in input folder. Please check input folder and retry."); return; };
+if(xmlFiles.length === 0) { return console.warn("[prop-xml-extractor] Warn: No .xml files found in input folder. Please check input folder and retry."); };
 xmlFiles.forEach((file) => {
     const parser = new Parser(),
         filePath = path.join(inputDirectory, file);
@@ -38,11 +38,11 @@ xmlFiles.forEach((file) => {
     parser.on("opentag", (name, attrs) => { if(name == "name") { tagName = name; }});
     parser.on("closetag", name => { if(name == "name") { storage.set(index++, prop); }});
     parser.on("text", text => { if (tagName === "name") { prop = text; } });
-    parser.on('error', err => { console.error("[prop-xml-extractor]", err); return; });
+    parser.on('error', err => { return console.error("[prop-xml-extractor]", err); });
     parser.on('finish', () => {
         storage.forEach((item) => { if (!output.has(item)) { output.set(item, undefined); }});
         var json = JSON.stringify([...output.keys()], null, 1).replaceAll(/[\[\]", ]/g, '').trim();
-        fs.writeFile(`result/${file}-result.txt`, json, err => {if (err) {console.error("[prop-xml-extractor]", err); return; }})
+        fs.writeFile(`result/${file}-result.txt`, json, err => {if (err) { return console.error("[prop-xml-extractor]", err); }});
         console.log(`[prop-xml-extractor] Result: Done, for ${file} got ${output.size} items !`);
     });
 

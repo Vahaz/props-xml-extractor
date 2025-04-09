@@ -1,63 +1,51 @@
-var sea = require("node:sea");
-
+const sea = require("node:sea");
 if (sea.isSea()) {
     const { createRequire } = require("node:module");
     require = createRequire(__filename);
 }
 
-const fs = require("fs")
-const xml2js = require("xml2js");
+const fs = require("fs"),
+    path = require("path"),
+    Parser = require("node-xml-stream"),
+    resultDirectory = __dirname + "/result",
+    inputDirectory = __dirname + "/input";
 
-var parser = new xml2js.Parser();
-var storage = new Map(); 
-var output = new Map();
+if(!fs.existsSync(inputDirectory)) { 
+    fs.mkdirSync(inputDirectory, {recursive: false});
+    console.warn("[prop-xml-extractor] Warn: No result folder found. Creating it...");
+};
 
-fs.readFile(__dirname + 'data.xml', "utf-8", function(err, data) {
-    if (err) { console.warn("[prop-xml-extractor] Error: data.xml do not exist."); return }
-    parser.parseString(data, function (err, result) {
-        if (result == undefined) { console.warn("[prop-xml-extractor] Error: data.xml might be empty."); return }
-        const Items = result.CMapTypes.archetypes[0].Item;
-        var index = 0;
-        Items.forEach((Item) => {
-            // Props
-            if(Item.name[0] != undefined) storage.set((index += 1), Item.name[0]);
+if(!fs.existsSync(resultDirectory)) { 
+    fs.mkdirSync(resultDirectory, {recursive: false});
+    console.warn("[prop-xml-extractor] Warn: No input folder found. Creating it...");
+    console.warn("[prop-xml-extractor] Warn: Place .xml files in input folder and retry !");
+    return;
+};
 
-            // Extensions Props
-            const Props = Item.extensions[0].Item;
-            if(Props != undefined) {
-                Props.forEach((prop) => { 
-                    if(prop.spawnType != undefined) storage.set((index += 1), prop.spawnType[0]);
-                });
-            };
+try { var inputFiles = fs.readdirSync(inputDirectory, "utf-8"); } 
+catch(err) { console.error("[prop-xml-extractor]", err); return; }
 
-            // Entities Props
-            if(Item.entities != undefined) {
-                const Entities = Item.entities[0].Item;
-                Entities.forEach((entity) => { 
-                    if(entity.archetypeName != undefined) storage.set((index += 1), entity.archetypeName[0]);
-                })
-            };
+const xmlFiles = inputFiles.filter((file) => path.extname(file) === ".xml");
+if(xmlFiles.length === 0) { console.warn("[prop-xml-extractor] Warn: No .xml files found in input folder. Please check input folder and retry."); return; };
+xmlFiles.forEach((file) => {
+    const parser = new Parser(),
+        filePath = path.join(inputDirectory, file);
+    var index = 0,
+        storage = new Map(),
+        output = new Map(),
+        tagName, prop;
 
-            // Entities Sets Props
-            if (Item.entitySets != undefined) {
-                const EntitySetsItems = Item.entitySets[0].Item;
-                EntitySetsItems.forEach((item) => {
-                    const Entities = item.entities[0].Item;
-                    Entities.forEach((object) => {
-                        if(object.archetypeName != undefined) storage.set((index += 1), object.archetypeName[0]);
-                    });
-                });
-            };
-        });
-
-        storage.forEach((item) => {
-            if (!output.has(item)) {
-                output.set(item, undefined);
-            };
-        });
-
-        var json = JSON.stringify([...output.keys()], null, 1).replaceAll('[', '').replaceAll('"', '').replaceAll(',', '').replaceAll(']', '').replaceAll(' ', ''); // How regex works???
-        fs.writeFile('result.txt', json, err => {});
-        console.log(`[prop-xml-extractor] Result: Done, got ${output.size} props !`);
+    parser.on("opentag", (name, attrs) => { if(name == "name") { tagName = name; }});
+    parser.on("closetag", name => { if(name == "name") { storage.set(index++, prop); }});
+    parser.on("text", text => { if (tagName === "name") { prop = text; } });
+    parser.on('error', err => { console.error("[prop-xml-extractor]", err); return; });
+    parser.on('finish', () => {
+        storage.forEach((item) => { if (!output.has(item)) { output.set(item, undefined); }});
+        var json = JSON.stringify([...output.keys()], null, 1).replaceAll(/[\[\]", ]/g, '').trim();
+        fs.writeFile(`result/${file}-result.txt`, json, err => {if (err) {console.error("[prop-xml-extractor]", err); return; }})
+        console.log(`[prop-xml-extractor] Result: Done, for ${file} got ${output.size} items !`);
     });
+
+    let stream = fs.createReadStream(filePath, 'UTF-8');
+    stream.pipe(parser);
 });
